@@ -1,5 +1,4 @@
 import './style.scss';
-
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<h1>Hello, World!</h1>
-`;
+import render from './common/render.ts';
+import App from './App.ts';
+render(App, document.querySelector<HTMLDivElement>('#app')!);
