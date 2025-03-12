@@ -1,0 +1,53 @@
+import type { Route } from './router';
+import Component from './common/Component';
+import { generateMatchers, findComponent } from './router';
+import render from './common/render';
+
+generateMatchers();
+
+class App extends Component {
+  private currentComponent: Route['component'] | null = null;
+  private ComponentInstance: Component | null = null;
+
+  render() {
+    // 이전의 컴포넌트와 현재의 컴포넌트를 비교후 다르다면 새로운 컴포넌트를 렌더링
+    // 같다면 이전의 컴포넌트를 렌더링한다.
+    // currentComponent !== PageComponet -> 새롭게 업데이트
+    const PageComponent = findComponent();
+    if (PageComponent !== this.currentComponent) {
+      this.currentComponent = PageComponent;
+      this.ComponentInstance = new PageComponent();
+    }
+
+    const page = this.ComponentInstance!.render();
+    return `${page}`;
+  }
+}
+/**
+ * a링크를 클릭시 서버로 html을 재요청하는 것을 막기위해서 이벤트 동작을 막는다.
+ * pushState를 사용해 히스토리를 관리하고 리다이렉트를 방지한다.
+ * url이 변경된이후에 render()함수를 호출해 해당되는 페이지를 리렌더링한다
+ */
+window.addEventListener('click', (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (!target.closest('.route')) return;
+
+  e.preventDefault();
+
+  const path = target.dataset.route;
+  if (location.pathname === path) return;
+  history.pushState(null, '', path);
+
+  render();
+});
+
+/**
+ * 뒤로가기나 앞으로가기 클릭시 리렌더링한다
+ * pushState를 사용하였기 때문에 새로운 히스토리 목록을 통해 관리하므로
+ * popstate를 사용하지 않으면 뒤로가기와 앞으로가기를 통해 리렌더링을 할수 없다.
+ */
+window.addEventListener('popstate', () => {
+  render();
+});
+
+export default App;
