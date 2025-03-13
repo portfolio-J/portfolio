@@ -1,5 +1,29 @@
 @use './assets/styles' as *;
 
+@include font-face(
+  'Open Sans',
+  (
+    '/fonts/open-sans-regular.woff2': woff2,
+    '/fonts/open-sans-regular.woff': woff,
+  ),
+  400
+);
+
+@include font-face(
+  'Open Sans',
+  (
+    '/fonts/open-sans-700.woff2': woff2,
+    '/fonts/open-sans-700.woff': woff,
+  ),
+  //
+  700
+);
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 30px;
+}
+
 h1 {
   color: $temaColor;
 }

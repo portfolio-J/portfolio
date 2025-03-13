@@ -1,0 +1,10 @@
+@use './functions' as *;
+
+@mixin font-face($name, $urls, $weight, $display: swap) {
+  @font-face {
+    font-family: $name;
+    src: #{generate-sources($urls)};
+    font-weight: $weight;
+    font-display: $display;
+  }
+}

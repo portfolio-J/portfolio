@@ -1,0 +1,10 @@
+@use 'sass:list';
+
+/// url리스트를 받아 font-face src 포멧에 맞게 변경하여 리턴해주는 함수
+@function generate-sources($urls) {
+  $src: ();
+  @each $url, $format in $urls {
+    $src: list.append($src, url('#{$url}') format('#{$format}'), comma);
+  }
+  @return $src;
+}
