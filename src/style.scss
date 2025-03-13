@@ -1,3 +1,5 @@
+@use './assets/styles' as *;
+
 h1 {
-  color: red;
+  color: $temaColor;
 }

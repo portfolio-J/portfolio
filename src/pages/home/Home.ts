@@ -4,6 +4,7 @@ class Home extends Component {
   render() {
     return `
    <div>
+    <h1>이곳은 홈입니다.</h1>
     <ul class="route">${routes
       .map(({ path, component }) => {
         if (path === '/') return;
