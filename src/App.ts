@@ -2,12 +2,14 @@ import type { Route } from './router';
 import Component from './common/Component';
 import { generateMatchers, findComponent } from './router';
 import render from './common/render';
+import { eventHolder } from './common/eventHolder';
 
 generateMatchers();
 
 class App extends Component {
   private currentComponent: Route['component'] | null = null;
   private ComponentInstance: Component | null = null;
+  private $root = document.getElementById('app');
 
   render() {
     // 이전의 컴포넌트와 현재의 컴포넌트를 비교후 다르다면 새로운 컴포넌트를 렌더링
@@ -15,6 +17,15 @@ class App extends Component {
     // currentComponent !== PageComponet -> 새롭게 업데이트
     const PageComponent = findComponent();
     if (PageComponent !== this.currentComponent) {
+      // 페이지컴포넌트에서 event를 등록할때 this를 바인드하게 된후에
+      // new PageComponet로 새로운 페이지 인스턴스를 만들게 되면
+      // 이전의 this와 새로운인스턴스의 this가 다르기 때문에 제대로 동작하지 않는문제가 발생한다.(중복된 이벤트는 새로등록되지 않는다.)
+      // 새로운 컴포넌트가 등록되면 브라우저에 등록된 이벤트를 제거하고 다시 등록한다.
+      eventHolder.forEach(({ type, handler }) => {
+        this.$root!.removeEventListener(type, handler);
+      });
+
+      eventHolder.length = 0;
       this.currentComponent = PageComponent;
       this.ComponentInstance = new PageComponent();
     }
