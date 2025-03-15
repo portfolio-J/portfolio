@@ -40,8 +40,9 @@ const updateDOM = (parent: DiffableNode, realNode: DiffableNode, virtualNode: Di
 
   // 6. element.nodeName이 동일한 경우, attribute를 확인해 동일하면 유지하고 다르면 변경한다.
   // virtualNode에 존재하는 어트리뷰트가 realNode에는 존재하지 않거나 어트리뷰트 값이 같지 않으면 realNode에 해당 어트리뷰트를 추가/변경해 virtualNode와 일치시킨다.
-  if (realNode instanceof HTMLElement && virtualNode instanceof HTMLElement) {
+  if (realNode instanceof Element && virtualNode instanceof Element) {
     for (const { name, value } of [...virtualNode.attributes]) {
+      console.log(name, value);
       if (!realNode.hasAttribute(name) || realNode.getAttribute(name) !== value) {
         realNode.setAttribute(name, value);
       }

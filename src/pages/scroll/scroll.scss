@@ -1,0 +1,51 @@
+@use 'styles' as *;
+
+.title {
+  margin: 0px;
+  padding: 8px;
+  color: #db5b33;
+  font-weight: 300;
+  @extend %flex-center;
+}
+
+article {
+  height: 100vh;
+  color: white;
+  font-size: 3rem;
+  font-weight: 700;
+  @extend %flex-center;
+
+  &:nth-of-type(odd) {
+    background: rgb(100, 78, 226);
+  }
+  &:nth-of-type(even) {
+    background: rgb(34, 185, 255);
+  }
+}
+
+.icon-scroll {
+  width: 60px;
+  height: 75px;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate3D(-50%, 0, 0);
+  animation: glow 4s infinite;
+  color: #fff;
+  display: none;
+  cursor: pointer;
+}
+
+.show {
+  display: block;
+}
+
+@keyframes glow {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+    transform: translate3D(-50%, 10px, 0);
+  }
+}
