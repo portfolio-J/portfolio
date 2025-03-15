@@ -1,4 +1,4 @@
-import './scroll.scss';
+import st from './scroll.module.scss';
 
 import Component from '../../common/Component';
 import { html } from '@/utils/template';
@@ -17,14 +17,13 @@ class Scroll extends Component<ScrollState> {
   }
 
   render() {
-    console.log(this.state.isVisible);
     return html`
-      <h3 class="title">Scrolling go to Top</h1>
+      <h3 class="${st.title}">Scrolling go to Top</h1>
       <article>Section 1</article>
       <article>Section 2</article>
       <article>Section 3</article>
       <article>Section 4</article>
-      <svg class='icon-scroll ${this.state.isVisible ? 'show' : ''}' >
+      <svg class='${st['icon-scroll']} ${this.state.isVisible ? `${st.show}` : ''}' >
         <use href='/assets/icons/sprite.svg#icon-scroll'></use>
       </svg>
     `;
@@ -47,7 +46,7 @@ class Scroll extends Component<ScrollState> {
   protected addEventListeners(): EventHandler[] {
     return [
       { type: 'scroll', selector: 'window', handler: throttle(this.showIconHandler.bind(this), 100) },
-      { type: 'click', selector: '.icon-scroll', handler: this.scrollToTopHandler },
+      { type: 'click', selector: `.${st['icon-scroll']}`, handler: this.scrollToTopHandler },
     ];
   }
 }
