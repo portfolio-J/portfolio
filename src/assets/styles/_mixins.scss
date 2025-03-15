@@ -1,5 +1,9 @@
 @use './functions' as *;
 
+/// font-face를 만들어 폰트를 추가한다.
+/// $urls -> ('/fonts/폰트.확장자': woff2(확장자)', '/fonts/폰트.확장자': woff(확장자))
+/// generate-sources함수 -> $src:()리스트를 만들고 $urls를 @each를 통해 url,format 문자열을 만들어 반환한다
+/// url(''/fonts/폰트.확장자') fornat('woff2')', url(''/fonts/폰트.확장자') fornat('woff2')'
 @mixin font-face($name, $urls, $weight, $display: swap) {
   @font-face {
     font-family: $name;

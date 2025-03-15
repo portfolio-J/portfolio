@@ -1,5 +1,6 @@
 @use './assets/styles' as *;
 
+// _mixins.scss
 @include font-face(
   'Open Sans',
   (
@@ -24,6 +25,8 @@ body {
   font-size: 30px;
 }
 
-h1 {
-  color: $temaColor;
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
 }
