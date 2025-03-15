@@ -25,7 +25,7 @@ abstract class Component<S extends Record<string, any> = {}> {
    *
    * @param newState 상태로 이루어진 객체
    */
-  private setState(newState: Partial<S>) {
+  protected setState(newState: Partial<S>) {
     this.state = { ...this.state, ...newState };
     render();
   }
@@ -54,8 +54,8 @@ abstract class Component<S extends Record<string, any> = {}> {
         event.handler = (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.matches(selector) || target.closest(selector)) handler(e);
-          eventHolder.push(event);
         };
+        eventHolder.push(event);
       }
     }
   }
