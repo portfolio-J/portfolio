@@ -6,7 +6,7 @@ import render from './render';
  * 모든 페이지컴포넌트의 상태와 이벤트핸들러를 처리해주는 추상클래스
  */
 abstract class Component<S extends Record<string, any> = {}> {
-  protected state: S;
+  protected state: S = {} as S;
   /**
    *
    * @param initalState : 초기 상태값 존재하지 않을 수도 있다.
@@ -27,6 +27,7 @@ abstract class Component<S extends Record<string, any> = {}> {
    */
   protected setState(newState: Partial<S>) {
     this.state = { ...this.state, ...newState };
+    console.log('[state]', this.state);
     render();
   }
 
