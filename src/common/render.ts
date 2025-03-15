@@ -23,7 +23,7 @@ const bindEventHandler = ($root: HTMLElement) => {
  *
  * 이전의 node와 현재의 node를 비교해 변경된 요소만 리렌더링한다.
  */
-const render = (RootComponent?: typeof App, $container?: HTMLDivElement) => {
+const render = async (RootComponent?: typeof App, $container?: HTMLDivElement) => {
   /**
    * 리렌더링할시에 비교하기위해 root와 rootComponentInstance를 할당한다.
    */
@@ -37,7 +37,7 @@ const render = (RootComponent?: typeof App, $container?: HTMLDivElement) => {
    * applyDiff를 통해 요소들을 비교하고 업데이트한다.
    */
   const $virtual = $root.cloneNode() as HTMLElement;
-  const domString = rootComponentInstance.render();
+  const domString = await rootComponentInstance.render();
   $virtual.innerHTML = domString;
 
   applyDiff($root, $virtual);
