@@ -1,0 +1,50 @@
+@use 'styles' as *;
+
+.title {
+  margin-top: 50px;
+  color: red;
+  text-align: center;
+}
+
+.container {
+  margin: auto;
+  width: 100vw;
+  height: 500px;
+  @extend %flex-center;
+
+  & .increase,
+  .decrease {
+    width: 150px;
+    height: 80px;
+    background-color: bisque;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 80px;
+    @extend %flex-center;
+
+    &:active {
+      transform: scale(0.95);
+      background-color: #f5deb3;
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    & span {
+      height: 1em;
+    }
+  }
+
+  & .decrease {
+    & span {
+      transform: translate(0, -15%);
+    }
+  }
+  & .increase {
+    & span {
+      transform: translate(0, -10%);
+    }
+  }
+  & .counter {
+    width: 200px;
+    font-size: 40px;
+    @extend %flex-center;
+  }
+}
