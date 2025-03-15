@@ -1,7 +1,8 @@
 # TroubleShooting
 
 [1. Postcss 적용](#1-postcss-적용)  
-[2. SVG 업데이트(캐시문제)](#2-svg-업데이트-캐시-문제)
+[2. SVG 업데이트(캐시문제)](#2-svg-업데이트-캐시-문제)  
+[3. this 바인딩](#3-this-바인딩-문제-페이지-전환과-이벤트-핸들러)
 
 ## 1. PostCSS 적용
 
@@ -70,6 +71,10 @@ export default defineConfig({
 사용자의 연령대, 지역, 기기 환경 등을 고려하여 적절한 browserslist 설정을 적용하는 것이 중요하다.
 
 ✅ 앞으로 브라우저 지원 범위를 설정할 때, 프로젝트에 맞게 최적화된 설정을 고민해보자! 🚀🔥
+
+</br>
+</br>
+</br>
 
 ## 2. SVG 업데이트 (캐시 문제)
 
@@ -184,3 +189,141 @@ export default defineConfig({
 - 운영 배포 → `[hash]` 파일명 전략
 - 배포단계에서는 정적 리소스를 변경하는 경우는 적으니 상황에 맞게 하면 좋을거 같다.
   🚀
+
+</br>
+</br>
+</br>
+
+## 3. this 바인딩 문제 (페이지 전환과 이벤트 핸들러)
+
+페이지 간 전환 기능을 위해 SPA(Single Page Application) 구조로 개발했다.  
+이 과정에서 **이벤트 핸들러와 this 바인딩 문제**가 발생하여 디버깅 및 개선을 진행했다.
+
+---
+
+### 문제 상황
+
+페이지 이동 시, 페이지 컴포넌트는 다음과 같이 인스턴스를 새로 생성하여 상태 초기화를 방지하고 있다.
+
+```ts
+const PageComponent = findComponent();
+
+if (PageComponent !== this.currentComponent) {
+  this.currentComponent = PageComponent;
+  this.ComponentInstance = new PageComponent();
+}
+```
+
+그리고 각 컴포넌트에서는 이벤트 핸들러를 등록하고 있다.
+
+```ts
+addEventListeners() {
+  return [
+    { type: 'click', selector: '.container', handler: updateCounterHandler.bind(this) }
+  ];
+}
+```
+
+📌 여기서 `bind(this)`를 사용하여 핸들러의 `this`를 현재 컴포넌트 인스턴스에 바인딩했다.
+
+하지만 문제는 페이지가 이동될 때마다 새로운 컴포넌트 인스턴스를 생성하고,  
+기존 이벤트 핸들러가 브라우저에 남아 있어서 **이전 핸들러가 호출되는 현상**이 발생했다.  
+즉, `this`가 다른 인스턴스를 가리켜 예상치 못한 동작을 하게 되었다.
+
+---
+
+### 문제 원인
+
+- 기존 이벤트 핸들러가 브라우저에 등록된 상태로 남아 있음.
+- 이벤트 등록 시 `type`과 `selector`만 기준으로 중복 여부를 확인하여  
+  `this`가 다른 핸들러는 제거되지 않음.
+- `bind(this)`를 통해 새로운 함수를 생성했기 때문에 기존 핸들러와 참조가 다름.
+- 결국 이벤트가 중복 등록되거나 의도하지 않은 인스턴스의 핸들러가 호출됨.
+
+---
+
+### 확인 사항
+
+- `App` 컴포넌트는 새로운 페이지로 이동 시 컴포넌트를 새로 생성하여 상태를 초기화하고 있다.
+- `this.ComponentInstance`가 새로 생성되었지만, 기존 `eventHolder`에는 이전 인스턴스의 핸들러가 여전히 존재.
+- 기존 인스턴스의 이벤트 핸들러가 제거되지 않아 새로운 인스턴스와 충돌.
+
+---
+
+### 문제 코드
+
+```ts
+const PageComponent = findComponent();
+
+if (PageComponent !== this.currentComponent) {
+  this.currentComponent = PageComponent;
+  this.ComponentInstance = new PageComponent();
+}
+```
+
+---
+
+### 해결 방법
+
+➡ 페이지 전환 시 기존에 등록한 모든 이벤트를 제거하고 `eventHolder`를 초기화했다.
+
+```ts
+const PageComponent = findComponent();
+
+if (PageComponent !== this.currentComponent) {
+  // 기존 이벤트를 제거
+  eventHolder.forEach(({ type, handler }) => {
+    this.$root!.removeEventListener(type, handler);
+  });
+
+  eventHolder.length = 0;
+
+  this.currentComponent = PageComponent;
+  this.ComponentInstance = new PageComponent();
+}
+```
+
+✅ `eventHolder`에 있는 기존 핸들러를 제거하여  
+새로운 컴포넌트 인스턴스의 이벤트 핸들러만 브라우저에 등록되도록 개선했다.
+
+---
+
+### 추가 사항
+
+현재 `counter` 페이지 컴포넌트에서는 상태를 저장할 필요는 없다.  
+단순히 증가/감소 기능만 필요하기 때문이다.
+
+하지만 만약 페이지를 벗어났다가 다시 돌아와서  
+이전 상태값을 유지하고 싶다면, 상태를 외부에 저장할 필요가 있다.
+
+#### 상태 저장 방법
+
+1. **`localStorage` 사용**
+
+   - 브라우저에 상태를 저장하고 페이지를 다시 로드할 때 불러온다.
+   - 예시 코드:
+
+     ```ts
+     // 저장
+     localStorage.setItem('counter', JSON.stringify(this.state.counter));
+
+     // 복원
+     const savedCounter = localStorage.getItem('counter');
+     const initialCounter = savedCounter ? JSON.parse(savedCounter) : 0;
+     ```
+
+2. **전역 상태 관리**
+   - 앱의 공통 상태로 관리하여 페이지가 전환되더라도 값 유지.
+   - 예시: Redux, Context API, 또는 직접 만든 글로벌 상태 관리 모듈
+
+---
+
+### 💡 트러블슈팅 정리
+
+SPA에서 페이지 전환 시 이벤트 핸들러와 this 바인딩을 어떻게 관리할지 고민이 필요하다.
+
+✅ `bind(this)` 사용 시, 인스턴스가 새로 생성되면 기존 핸들러와 충돌 가능성을 염두에 둘 것  
+✅ 기존 이벤트를 제거하거나 전역 상태를 활용하여 관리 체계를 명확히 할 것  
+✅ 개발 중에는 이벤트 핸들링 시스템이 예상대로 동작하는지 디버깅 도구나 로그를 통해 주기적으로 점검할 것
+
+---
