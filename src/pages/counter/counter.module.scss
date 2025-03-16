@@ -1,9 +1,7 @@
 @use 'styles' as *;
 
 .title {
-  margin-top: 50px;
-  color: red;
-  text-align: center;
+  @extend %title;
 }
 
 .container {
