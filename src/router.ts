@@ -1,4 +1,4 @@
-import { Home, Palindrome, Scroll, Counter } from './pages';
+import { Home, Palindrome, Scroll, Counter, DarkMode } from './pages';
 import Component from './common/Component.ts';
 import NotFound from './pages/NotFound.ts';
 
@@ -15,6 +15,7 @@ const routes: Route[] = [
   { path: '/counter', component: Counter },
   { path: '/scroll', component: Scroll },
   { path: '/palindrome', component: Palindrome },
+  { path: '/darkmode', component: DarkMode },
 ];
 
 /**

@@ -1,0 +1,65 @@
+@use 'styles' as *;
+
+$toggle-width: 120px;
+$toggle-height: 60px;
+$toggle-button-padding: 2px;
+
+.title {
+  @extend %title;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 40px;
+
+  .toggle {
+    @extend %flex-center;
+    position: relative;
+    justify-content: space-around;
+    margin: 0 auto;
+    width: $toggle-width;
+    height: $toggle-height;
+    background-color: deeppink;
+    border-radius: calc($toggle-height / 2);
+    cursor: pointer;
+
+    & .toggle-button {
+      position: absolute;
+      left: $toggle-button-padding;
+      width: calc($toggle-height - $toggle-button-padding);
+      height: calc($toggle-height - $toggle-button-padding);
+      background-color: $color-white;
+      border-radius: 100%;
+      transition: left 0.3s;
+    }
+
+    & .icon-container {
+      @extend %flex-center;
+      width: 1.2rem;
+      height: 1em;
+      color: $color-white;
+    }
+  }
+
+  & .description {
+    margin-top: 40px;
+    font-size: 1rem;
+  }
+}
+
+.dark-mode {
+  background-color: $color-black;
+
+  & > .toggle {
+    background-color: green;
+    & .toggle-button {
+      left: calc($toggle-width / 2);
+    }
+  }
+
+  & .description {
+    color: $color-white;
+  }
+}
