@@ -25,9 +25,9 @@ class Counter extends Component<CounterState> {
   updateCounterHandler(e: Event) {
     const target = e.target as HTMLElement;
 
-    if (target.closest(`.${st.decrease}`) && this.state.counter > 0) this.setState({ counter: --this.state.counter });
+    if (target.closest(`.${st.decrease}`) && this.state.counter > 0) this.setState({ counter: this.state.counter - 1 });
     if (target.closest(`.increase`)) {
-      this.setState({ counter: ++this.state.counter });
+      this.setState({ counter: this.state.counter + 1 });
     }
   }
 

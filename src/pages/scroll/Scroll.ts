@@ -19,10 +19,10 @@ class Scroll extends Component<ScrollState> {
   render() {
     return html`
       <h3 class="${st.title}">Scrolling go to Top</h1>
-      <article>Section 1</article>
-      <article>Section 2</article>
-      <article>Section 3</article>
-      <article>Section 4</article>
+      <article class="${st.section}">Section 1</article>
+      <article class="${st.section}">Section 2</article>
+      <article class="${st.section}">Section 3</article>
+      <article class="${st.section}">Section 4</article>
       <svg class='${st['icon-scroll']} ${this.state.isVisible ? `${st.show}` : ''}' >
         <use href='/assets/icons/sprite.svg#icon-scroll'></use>
       </svg>
