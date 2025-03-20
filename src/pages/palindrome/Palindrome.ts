@@ -36,7 +36,7 @@ class Palindrome extends Component<PalindromeState> {
   }
 
   isPalindrome(str: string): boolean {
-    const normalizedStr = str.toLowerCase().replace(/[\w_\s]/g, '');
+    const normalizedStr = str.toLowerCase().replace(/[^a-zA-Z0-9가-힣]/g, '');
     const reverse = normalizedStr.split('').reverse().join('');
 
     return normalizedStr === reverse;
