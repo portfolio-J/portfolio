@@ -1,0 +1,47 @@
+@use 'styles' as *;
+
+.title {
+  @extend %title;
+}
+
+.popup-wrapper {
+  width: 100vw;
+  height: 100vh;
+
+  & .message {
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+  }
+}
+
+.popup {
+  display: none;
+  &.open {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  top: 0;
+  & .popup-container {
+    position: relative;
+    top: 30%;
+    $container-width: 500px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 10px 11px 24px 0px rgba(0, 0, 0, 0.75);
+    padding: 20px;
+    width: $container-width;
+    margin: 0 auto;
+    & .popup-title {
+      color: red;
+      font-size: 32px;
+      text-align: center;
+    }
+  }
+}
