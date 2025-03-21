@@ -3,5 +3,6 @@ import Counter from './counter/Counter.ts';
 import Scroll from './scroll/Scroll.ts';
 import Palindrome from './palindrome/Palindrome.ts';
 import DarkMode from './darkMode/DarkMode.ts';
+import Popup from './popup/Popup.ts';
 
-export { Home, Counter, Scroll, Palindrome, DarkMode };
+export { Home, Counter, Scroll, Palindrome, DarkMode, Popup };
