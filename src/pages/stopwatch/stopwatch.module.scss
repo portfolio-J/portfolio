@@ -1,0 +1,52 @@
+@use 'styles' as *;
+
+.title {
+  @extend %title;
+}
+
+.stopwatch-container {
+  @extend %flex-center;
+  margin-top: $spacing-xxl;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-lg;
+  flex-direction: column;
+  gap: 12px;
+
+  & .stopwatch-btn {
+    margin: $spacing-md;
+    padding: 16px;
+    width: 120px;
+    border: 2px solid $color-red;
+    border-radius: 4px;
+    font-weight: $font-weight-lg;
+    cursor: pointer;
+
+    &:hover:enabled {
+      background-color: $color-red;
+      color: $color-white;
+    }
+    &:hover:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.laps {
+  margin: 12px auto;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  width: 260px;
+  column-gap: 50px;
+  row-gap: 10px;
+  text-align: center;
+  display: none;
+
+  &.laps-active {
+    display: grid;
+  }
+
+  & .lap-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-lg;
+  }
+}

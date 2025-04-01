@@ -7,14 +7,12 @@ import render from './render';
  */
 abstract class Component<S extends Record<string, any> = {}> {
   private _state: S = {} as S;
-  /**
-   *
-   * @param initalState : 초기 상태값 존재하지 않을 수도 있다.
-   */
+  private onUnmount: () => void = () => {};
 
-  constructor(initalState?: S) {
+  constructor(initalState?: S, onUnmount?: () => void) {
     this._state = { ...initalState } as S;
     this.holdEvents();
+    this.onUnmount = onUnmount ?? (() => {});
   }
 
   get state(): Readonly<S> {
@@ -64,6 +62,21 @@ abstract class Component<S extends Record<string, any> = {}> {
         eventHolder.push(event);
       }
     }
+  }
+
+  unmount() {
+    const $root = document.querySelector('#app');
+
+    eventHolder.forEach(({ type, handler, selector }) => {
+      if (selector === 'window' || selector === null) {
+        window.removeEventListener(type, handler);
+        return;
+      }
+      $root!.removeEventListener(type, handler);
+    });
+
+    eventHolder.length = 0;
+    this.onUnmount();
   }
 
   abstract render(): string | Promise<string>;
