@@ -2,7 +2,8 @@
 
 [1. Postcss 적용](#1-postcss-적용)  
 [2. SVG 업데이트(캐시문제)](#2-svg-업데이트-캐시-문제)  
-[3. this 바인딩](#3-this-바인딩-문제-페이지-전환과-이벤트-핸들러)
+[3. this 바인딩](#3-this-바인딩-문제-페이지-전환과-이벤트-핸들러)  
+[4. 메모리 누수](#4-메모리-누수-발생인터벌-중첩)
 
 ## 1. PostCSS 적용
 
@@ -327,3 +328,108 @@ SPA에서 페이지 전환 시 이벤트 핸들러와 this 바인딩을 어떻�
 ✅ 개발 중에는 이벤트 핸들링 시스템이 예상대로 동작하는지 디버깅 도구나 로그를 통해 주기적으로 점검할 것
 
 ---
+
+</br>
+</br>
+
+## 4. 메모리 누수 발생(인터벌 중첩)
+
+SPA 구조에서 타이머가 작동 중일 때 페이지 전환이 발생하면, `setInterval`이 계속 유지되는 문제가 발생했다.  
+이로 인해 **메모리 누수 및 중첩 실행 현상**이 발생했으며, 이에 대한 처리가 필요했다.
+
+---
+
+### 문제 상황
+
+`Stopwatch` 페이지에서 타이머를 시작한 뒤, 다른 페이지로 이동하면  
+타이머가 멈추지 않고 백그라운드에서 계속 실행되었다.  
+이로 인해 `setInterval`이 중복 실행되거나 메모리를 지속적으로 점유하는 현상이 발생했다.
+
+---
+
+### 원인 분석
+
+- SPA 구조상 컴포넌트를 새로 마운트할 때 이전 컴포넌트의 타이머나 이벤트가 자동으로 정리되지 않음.
+- `setInterval`은 명시적으로 `clearInterval`을 호출하지 않으면 계속 작동한다.
+- 페이지 전환 시 타이머 제거 로직이 존재하지 않았음.
+
+---
+
+### 해결 방법
+
+#### 1. `Stopwatch` 컴포넌트 생성자에 언마운트 콜백 전달
+
+```ts
+super(
+  {
+    time: 0,
+    buttons: {
+      left: 'Start',
+      right: 'Reset',
+    },
+    laps: [],
+  },
+  () => {
+    clearInterval(this.timeId!); // 언마운트 시 타이머 제거
+  },
+);
+```
+
+✅ `Component` 클래스에 전달된 콜백은 페이지가 언마운트될 때 실행되도록 설정된다.
+
+---
+
+#### 2. `Component` 클래스의 언마운트 처리 로직 추가
+
+```ts
+constructor(initalState?: S, onUnmount?: () => void) {
+  this._state = { ...initalState } as S;
+  this.holdEvents();
+  this.onUnmount = onUnmount ?? (() => {});
+}
+
+unmount() {
+  const $root = document.querySelector('#app');
+
+  eventHolder.forEach(({ type, handler, selector }) => {
+    if (selector === 'window' || selector === null) {
+      window.removeEventListener(type, handler);
+      return;
+    }
+    $root!.removeEventListener(type, handler);
+  });
+
+  eventHolder.length = 0;
+  this.onUnmount(); // 전달받은 클린업 실행
+}
+```
+
+✅ 언마운트 시 등록된 이벤트를 해제하고,  
+전달된 콜백을 호출하여 타이머나 리소스를 정리하도록 구현하였다.
+
+---
+
+### 정리
+
+#### 🟢 문제 원인
+
+SPA 페이지 전환 시 컴포넌트 내부에서 생성된 타이머(setInterval)가 정리되지 않아  
+중복 실행 및 메모리 누수가 발생했다.
+
+#### 🟢 해결 방법
+
+1. 컴포넌트 생성 시 `onUnmount` 콜백 전달
+2. `Component` 클래스에 `unmount()` 메서드를 추가하고 이벤트 및 리소스 정리
+3. 페이지 전환 시 기존 컴포넌트 인스턴스의 `unmount()` 호출
+
+---
+
+### 💡 트러블슈팅 정리
+
+SPA에서 타이머 또는 이벤트처럼 수동 정리가 필요한 리소스는  
+**언마운트 시점에 직접 정리할 수 있도록 콜백 체계를 설계하는 것이 중요하다.**
+
+✅ `onUnmount()` 콜백 구조로 재사용성과 확장성 향상  
+✅ 이벤트 외에도 타이머, 애니메이션, 외부 구독 등도 함께 정리 가능
+
+🚀 페이지 이동 시 리소스 누수 없이 안정적으로 관리되도록 리팩토링하였다.

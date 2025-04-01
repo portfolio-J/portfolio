@@ -1,4 +1,4 @@
-import { Home, Palindrome, Scroll, Counter, DarkMode, Popup } from './pages';
+import { Home, Palindrome, Scroll, Counter, DarkMode, Popup, StopWatch } from './pages';
 import Component from './common/Component.ts';
 import NotFound from './pages/NotFound.ts';
 
@@ -17,6 +17,7 @@ const routes: Route[] = [
   { path: '/palindrome', component: Palindrome },
   { path: '/darkmode', component: DarkMode },
   { path: '/popup', component: Popup },
+  { path: '/stopwatch', component: StopWatch },
 ];
 
 /**
